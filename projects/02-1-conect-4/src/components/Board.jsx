@@ -1,6 +1,8 @@
 import { SIZE, TURNS } from "../constants"
 import { useState, useEffect } from 'react'
 import { Square } from "./Square";
+import { isWinner } from "../logic";
+import { WinnerModal } from "./WinnerModal";
 
 export function Board() {
 
@@ -12,30 +14,48 @@ export function Board() {
 
     const [position, setPosition] = useState({ x: 0, y: 0 });
 
-    useEffect(() => {
-        const handleMove = (event) => {
-            const { clientX, clientY } = event
-            setPosition({ x: clientX, y: clientY })
-        }
+    const [winner, setWinner] = useState(null);
 
-        window.addEventListener('pointermove', handleMove)
+    // useEffect(() => {
+    //     const handleMove = (event) => {
+    //         const { clientX, clientY } = event
+    //         setPosition({ x: clientX, y: clientY })
+    //     }
 
-        return () => {
-            window.removeEventListener('pointermove', handleMove)
-        }
-    }, []);
+    //     window.addEventListener('pointermove', handleMove)
+
+    //     return () => {
+    //         window.removeEventListener('pointermove', handleMove)
+    //     }
+    // }, []);
+
+    const resetGame = () =>{
+        setBoard(Array(SIZE).fill(Array(SIZE).fill(null)))
+        setWinner(null)
+        setTurn(TURNS[1])
+    }
 
     const updateBoard = (event) => {
-        var i = event.target.id;
-        var newBoard = board;
-        console.log(newBoard[i])
-        // for (var x = SIZE -1; 0<x;x--){
-        //     if(newBoard[i][x] == null){
-        //         newBoard[i][x] = turn;
-        //         break;
-        //     }
-        // }
+        var col = event.target.id;
+        var newBoard = board.map(row => [...row]);;
+        var row = board.length -1;
 
+        for(row;row>=0;row--){
+            if(newBoard[row][col] == null){
+                newBoard[row][col] = turn;
+                break;
+            }
+        }
+
+        setBoard(newBoard)
+
+        var newWinner = isWinner(newBoard,parseInt(row),parseInt(col));
+
+        setWinner(newWinner);
+
+        var newTurn = turn == TURNS[1]? TURNS[2]:TURNS[1];
+
+        setTurn(newTurn);
     }
 
     return (
@@ -57,30 +77,42 @@ export function Board() {
                 }
 
             </div>
-            <div className={ `grid gap-3 justify-center items-center m-auto w-fit` }
-                style={{
-                    gridTemplateColumns: `repeat(${SIZE}, 7rem)`
-                }}
-            >
-                {
-                    board.map((raw, i) => {
-                        return (
-                            raw.map(((color, j) => {
-                                return (
-                                    <Square key={i + '-' + j} color={color}/>
-                                )
-                            }))
-                        )
-                    })
-                }
+            <div className="flex gap-6">
+                {/* board */}
+                <div className={ `grid gap-3 justify-center items-center m-auto w-fit` }
+                    style={{
+                        gridTemplateColumns: `repeat(${SIZE}, 7rem)`
+                    }}
+                >
+                    {
+                        board.map((raw, i) => {
+                            return (
+                                raw.map(((color, j) => {
+                                    return (
+                                        <Square color={color} key={i + '-' + j}/>
+                                    )
+                                }))
+                            )
+                        })
+                    }
+                </div>
+
+                {/* Turn area */}
+                <div>
+                    <h2>Turno del jugador</h2>
+                    <Square color={turn}/>
+                </div>
             </div>
 
-            <div style={{
+            <WinnerModal winner={winner} resetGame={resetGame} />
+
+            {/* token */}
+            {/* <div style={{
                 borderRadius: '50%',
                 transform: `translate(${position.x}px, ${position.y}px)`
             }}
                 className={' w-20 h-20 -left-10 -top-10 absolute' + turn}
-            />
+            /> */}
         </main>
     )
 }

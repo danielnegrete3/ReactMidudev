@@ -1,7 +1,7 @@
 
 export const TURNS ={
-    1 : ' bg-yellow-500 ',
-    2 : ' bg-rose-500 '
+    1 : ' #eab308 ',
+    2 : ' #f43f5e '
 }
 
 export const SIZE = 6;
