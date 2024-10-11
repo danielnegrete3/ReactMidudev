@@ -10,10 +10,10 @@ export const Todos:React.FC<Props> = ({
     todos
 }) =>
 {
-    const {isEditing,setIsEditing} = useTodos()
+    const {isEditing,setIsEditing,parent} = useTodos()
 
     return (
-        <ul className="todo-list">
+        <ul className="todo-list" ref={parent}>
             {
                 todos?.map((todo)=>{
                 return (

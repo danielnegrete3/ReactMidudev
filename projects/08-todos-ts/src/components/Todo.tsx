@@ -1,5 +1,5 @@
-import React, { MouseEventHandler, ReactHTMLElement, useEffect, useRef, useState } from "react";
-import { TodoCompleted, TodoId, TodoText, type Todo as Todotype} from "../types/todoesType";
+import React, { useEffect, useRef, useState } from "react";
+import { type Todo as Todotype} from "../types/todoesType";
 import { useTodos } from "../hooks/useTodos";
 
 interface Props {

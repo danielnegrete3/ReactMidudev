@@ -39,5 +39,7 @@ export interface FunctionsTodoType{
     handleFilter : ({filter}:FilterType) => void
     saveTodo: ({text}: TodoText) => void
     setComplited: ({id, completed} : ChangeComplitedType) => void
-    
+    parent: React.RefCallback<Element>
+    changeEnableAnimation: () => void
+    isEnableAnimations: boolean
 }

@@ -2,7 +2,7 @@ import { useTodos } from "../hooks/useTodos"
 import { Filters } from "./Filters"
 
 export function Footer({}){
-    const {todos,activeTodo,clearCompleted } = useTodos()
+    const {activeTodo,clearCompleted } = useTodos()
 
     const todoCheck = activeTodo()
     const count  = todoCheck.length > 0

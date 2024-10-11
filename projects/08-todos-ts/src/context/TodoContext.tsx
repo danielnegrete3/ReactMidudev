@@ -1,8 +1,10 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useReducer, useState } from "react";
 import { ChangeTodoTextType, FindTodoType, FunctionsTodoType, TodoId, TodoList, Todo, SaveTodoType, TodoText, ChangeComplitedType} from "../types/todoesType";
 import { mockTodos } from "../mocks/Todoes";
 import { FilterType, TodoFilters } from "../types/filtersType";
 import { TODO_FILTERS } from "../const/filters";
+import { useAutoAnimate } from '@formkit/auto-animate/react'
+import { initializate, TodoReducer } from "../reducers/TodoReduce";
 
 
 export const TodoContext = createContext<FunctionsTodoType | undefined>(undefined)
@@ -12,29 +14,37 @@ interface props {
 }
 
 export const TodoProvider= ({children} : props)=>{
-    const [todos,setTodos] = useState<TodoList>(mockTodos)
-    const [todosFiltered, setTodosFiltered] = useState<TodoList>(todos)
+    const [{sync,todos,filterSelected},dispatch] = useReducer(TodoReducer,initializate)
+    // const [todos,setTodos] = useState<TodoList>(mockTodos)
+    const [todosFiltered, setTodosFiltered] = useState<TodoList>([])
+
     const [isEditing, setIsEditing] = useState("")
-    const [filterSelected, setFilterSelected] = useState<TodoFilters>(TODO_FILTERS.ALL)
+    // const [filterSelected, setFilterSelected] = useState<TodoFilters>(TODO_FILTERS.ALL)
+    const [isEnableAnimations, setIsEnableAnimations] = useState(true)
+    const [parent, enableAnimations] = useAutoAnimate()
 
 
     const remove = ({id}: TodoId )=>{
-        const newTodos =  todos.filter(todo => todo.id !== id)
-        updateTodos(newTodos)
+        // const newTodos =  todos.filter(todo => todo.id !== id)
+        // updateTodos(newTodos)
+
+        dispatch({type:"REMOVE" , payload: {data:{id}}})
     }
 
     const changeText = ({id, text}: ChangeTodoTextType) =>{
-        const newTodos = todos.map(todo => {
-            if (todo.id === id){
-                return {
-                    ...todo,
-                    text
-                }
-            }
-            return todo
-        })
+        // const newTodos = todos.map(todo => {
+        //     if (todo.id === id){
+        //         return {
+        //             ...todo,
+        //             text
+        //         }
+        //     }
+        //     return todo
+        // })
 
-        updateTodos(newTodos)
+        // updateTodos(newTodos)
+
+        dispatch({type:"CHANGE_TEXT" , payload: {data:{id,text}}})
     }
 
     const activeTodo = ()=>{
@@ -46,22 +56,23 @@ export const TodoProvider= ({children} : props)=>{
     }
 
     const clearCompleted = ()=>{
-        const newTodos = todos.filter(todo =>{
-            if (!todo.completed){
-                return todo
-            }
-        })
+        // const newTodos = todos.filter(todo =>{
+        //     if (!todo.completed){
+        //         return todo
+        //     }
+        // })
 
-        updateTodos(newTodos)
+        // updateTodos(newTodos)
+        dispatch({type:"CLEAR_COMPLITED" , payload: {}})
     }
 
-    const updateTodos = (newTodos : TodoList)=>{
-        setTodos(newTodos)
-        handleFilter({filter:filterSelected, newTodos})
-    }
+    // const updateTodos = (newTodos : TodoList)=>{
+    //     // setTodos(newTodos)
+    //     handleFilter({filter:filterSelected, newTodos})
+    // }
 
     const handleFilter = ({filter, newTodos = todos}:FilterType) =>{
-        if(filterSelected != filter)  setFilterSelected(filter)
+        if(filterSelected != filter)  /*setFilterSelected(filter)*/ dispatch({type:"SER_FILTER", payload: {filter}})
 
         const newTodosFiltered = newTodos.filter(todo => {
             if(filter === TODO_FILTERS.ALL) return todo
@@ -74,23 +85,41 @@ export const TodoProvider= ({children} : props)=>{
     }
 
     const saveTodo = ({text}: TodoText) =>{
-        const newTodos = [
-            ...todos,
-            {id : crypto.randomUUID(),text , completed : false}
-        ]
-        updateTodos(newTodos)
+        // const newTodos = [
+        //     ...todos,
+        //     {id : crypto.randomUUID(),text , completed : false}
+        // ]
+        // updateTodos(newTodos)
+
+        dispatch({type:"SAVE_TODO" , payload: {data:{text}}})
     }
 
     const setComplited = ({id, completed} : ChangeComplitedType) => {
-        const newTodos = todos.map( todo =>{
-            if ( todo.id === id){
-                return {...todo, completed : completed}
-            }
-            return todo
-        })
+        // const newTodos = todos.map( todo =>{
+        //     if ( todo.id === id){
+        //         return {...todo, completed : completed}
+        //     }
+        //     return todo
+        // })
 
-        updateTodos(newTodos)
+        // updateTodos(newTodos)
+        dispatch({type:"SET_COMPLITED" , payload: {data:{id, completed}}})
     }
+
+    const changeEnableAnimation = () => {
+        const newBool = !isEnableAnimations
+        enableAnimations(newBool)
+        setIsEnableAnimations(newBool)
+    }
+
+    useEffect(() => {
+        dispatch({type:"INIT_TODOS", payload: {todos: mockTodos}})
+        setTodosFiltered(mockTodos)
+    },[])
+
+    useEffect(()=>{
+        handleFilter({filter:filterSelected, newTodos:todos})
+    },[todos])
 
     return(
         <TodoContext.Provider value={
@@ -106,7 +135,10 @@ export const TodoProvider= ({children} : props)=>{
                   filterSelected,
                   handleFilter,
                   saveTodo,
-                  setComplited
+                  setComplited,
+                  parent,
+                  isEnableAnimations,
+                  changeEnableAnimation
                   }}>
             {children}
         </TodoContext.Provider>

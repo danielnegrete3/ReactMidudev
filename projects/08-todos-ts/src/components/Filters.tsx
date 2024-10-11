@@ -9,12 +9,17 @@ const FILTERS_BUTTONS  = {
 } as const 
 
 export function Filters({}){
-    const {filterSelected,handleFilter} = useTodos()
+    const {filterSelected,handleFilter,isEnableAnimations,changeEnableAnimation} = useTodos()
 
     const handleClick = (filter: TodoFilters) => (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault()
         handleFilter({filter})
       }
+
+    const handleClickAnimate =  (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault()
+        changeEnableAnimation()
+    }
 
     return (
         <ul className="filters">
@@ -28,6 +33,9 @@ export function Filters({}){
                     )
                 })
             }
+            <li >
+                <a href={'/'} className={isEnableAnimations? "selected" : ""} onClick={handleClickAnimate}>{isEnableAnimations? "Des" : "Act"} An </a>
+            </li>
         </ul>
     )
 }
