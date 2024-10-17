@@ -5,6 +5,7 @@ import { FilterType, TodoFilters } from "../types/filtersType";
 import { TODO_FILTERS } from "../const/filters";
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { initializate, TodoReducer } from "../reducers/TodoReduce";
+import { CreateBin, ReadBin } from "../services/jsonBin";
 
 
 export const TodoContext = createContext<FunctionsTodoType | undefined>(undefined)
@@ -113,13 +114,20 @@ export const TodoProvider= ({children} : props)=>{
     }
 
     useEffect(() => {
-        dispatch({type:"INIT_TODOS", payload: {todos: mockTodos}})
-        setTodosFiltered(mockTodos)
+        ReadBin().then((todos) => {
+            dispatch({type:"INIT_TODOS", payload: {todos}})
+            setTodosFiltered(todos)
+        }).catch(
+            err => console.error(err)
+        )
     },[])
 
     useEffect(()=>{
         handleFilter({filter:filterSelected, newTodos:todos})
-    },[todos])
+        if(sync){
+            CreateBin({Todos: todos}).then(res => {if(!res) console.error("Fallo al actualizar los todos")})
+        }
+    },[todos,sync])
 
     return(
         <TodoContext.Provider value={
