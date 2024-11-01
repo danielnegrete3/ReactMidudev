@@ -1,0 +1,7 @@
+export const types = {
+    SWAP_LANGUAGES : "SWAP_LANGUAGES",
+    SET_TO_LANGUAGE : "SET_TO_LANGUAGE",
+    SET_FROM_LANGUAGE : "SET_FROM_LANGUAGE",
+    SET_FROM_TEXT : "SET_FROM_TEXT",
+    SET_TO_TEXT : "SET_TO_TEXT"
+} as const 

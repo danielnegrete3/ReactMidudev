@@ -1,5 +1,6 @@
+import { types } from "../consts/actionsTypes";
 import { AUTO_LANGUAGE } from "../consts/languages";
-import { Actions, State, types } from "../types/TranslateReducer";
+import { Actions, State} from "../types/TranslateReducer.d";
 
 export const InitialState:State = {
     fromLanguage : AUTO_LANGUAGE,
@@ -17,7 +18,7 @@ export function TranslateReducer (state : State, action: Actions): State{
             return {
                 ...state,
                 text : state.result,
-                result: state.text,
+                result: "",
                 fromLanguage : state.toLanguage,
                 toLanguage: state.fromLanguage
             }
@@ -28,6 +29,7 @@ export function TranslateReducer (state : State, action: Actions): State{
         const {language} = action.payload
         return {
             ...state,
+            isLoading:true,
             fromLanguage: language
         }
     }
@@ -35,6 +37,7 @@ export function TranslateReducer (state : State, action: Actions): State{
         const {language} = action.payload
         return {
             ...state,
+            isLoading:true,
             toLanguage: language
         }
     }
@@ -42,6 +45,8 @@ export function TranslateReducer (state : State, action: Actions): State{
         const {text} = action.payload
         return {
             ...state,
+            result: "",
+            isLoading:true,
             text: text
         }
     }
@@ -49,6 +54,7 @@ export function TranslateReducer (state : State, action: Actions): State{
         const {text} = action.payload
         return {
             ...state,
+            isLoading:false,
             result: text
         }
     }

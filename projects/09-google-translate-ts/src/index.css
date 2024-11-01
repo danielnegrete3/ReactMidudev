@@ -13,3 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  background-color: #242424; /* Cambia el color según lo que desees */
+}
